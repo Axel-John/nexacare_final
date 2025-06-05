@@ -2887,23 +2887,36 @@ def dashboard_ui(page, user):
                                 ),
                                 ft.Text(apt.get("patient_name", "Unknown"))
                             ], spacing=10),
-                            bgcolor=row_bgcolor
+                            bgcolor=row_bgcolor,
+                            padding=10,
+                            border_radius=8,
+                            border=ft.border.all(1, HR_PRIMARY if is_selected else "transparent")
                         )),
-                        ft.DataCell(ft.Container(ft.Text(date_str), bgcolor=row_bgcolor)),
-                        ft.DataCell(ft.Container(ft.Text(apt.get("doctor_name", "")), bgcolor=row_bgcolor)),
-                        ft.DataCell(ft.Container(ft.Text(apt.get("consultation_type", "")), bgcolor=row_bgcolor)),
+                        ft.DataCell(ft.Container(ft.Text(date_str), bgcolor=row_bgcolor, padding=10)),
+                        ft.DataCell(ft.Container(ft.Text(apt.get("doctor_name", "")), bgcolor=row_bgcolor, padding=10)),
+                        ft.DataCell(ft.Container(ft.Text(apt.get("consultation_type", "")), bgcolor=row_bgcolor, padding=10)),
                         ft.DataCell(ft.Container(
-                            ft.Container(
-                                content=ft.Text(
-                                    apt.get("status", ""),
-                                    color=ft.Colors.WHITE,
-                                    weight=ft.FontWeight.W_500
+                            ft.Row([
+                                ft.Container(
+                                    content=ft.Text(
+                                        apt.get("status", ""),
+                                        color=ft.Colors.WHITE,
+                                        weight=ft.FontWeight.W_500
+                                    ),
+                                    padding=ft.padding.symmetric(horizontal=10, vertical=5),
+                                    border_radius=15,
+                                    bgcolor=status_color
                                 ),
-                                padding=ft.padding.symmetric(horizontal=10, vertical=5),
-                                border_radius=15,
-                                bgcolor=status_color
-                            ),
-                            bgcolor=row_bgcolor
+                                ft.IconButton(
+                                    icon=ft.Icons.DELETE_OUTLINE,
+                                    icon_color=HR_ERROR,
+                                    tooltip="Delete Appointment",
+                                    on_click=lambda e, apt=apt: create_delete_confirmation_dialog(page, apt["id"], apt["patient_name"], handle_menu_selection),
+                                    visible=is_selected
+                                ) if is_selected else None
+                            ], alignment=ft.MainAxisAlignment.SPACE_BETWEEN),
+                            bgcolor=row_bgcolor,
+                            padding=10
                         )),
                     ],
                     on_select_changed=lambda e, apt=apt: handle_row_click(e, apt),
