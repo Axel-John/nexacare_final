@@ -2913,7 +2913,7 @@ def dashboard_ui(page, user):
                                     tooltip="Delete Appointment",
                                     on_click=lambda e, apt=apt: create_delete_confirmation_dialog(page, apt["id"], apt["patient_name"], handle_menu_selection),
                                     visible=is_selected
-                                ) if is_selected else None
+                                )
                             ], alignment=ft.MainAxisAlignment.SPACE_BETWEEN),
                             bgcolor=row_bgcolor,
                             padding=10
