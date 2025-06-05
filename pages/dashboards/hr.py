@@ -2875,10 +2875,23 @@ def dashboard_ui(page, user):
                         date_str = str(apt["appointment_date"])[:10]
                 is_selected = selected_appointment and selected_appointment["id"] == apt["id"]
                 row_bgcolor = HR_PRIMARY + "1A" if is_selected else HR_WHITE
+                
+                # Create the status cell content
+                status_cell_content = ft.Container(
+                    content=ft.Text(
+                        apt.get("status", ""),
+                        color=ft.Colors.WHITE,
+                        weight=ft.FontWeight.W_500
+                    ),
+                    padding=ft.padding.symmetric(horizontal=10, vertical=5),
+                    border_radius=15,
+                    bgcolor=status_color
+                )
+
                 row = ft.DataRow(
                     cells=[
                         ft.DataCell(ft.Container(
-                            ft.Row([
+                            content=ft.Row([
                                 ft.CircleAvatar(
                                     content=ft.Text(apt.get("patient_name", "")[0] if apt.get("patient_name") else "?"),
                                     radius=15,
@@ -2896,25 +2909,7 @@ def dashboard_ui(page, user):
                         ft.DataCell(ft.Container(ft.Text(apt.get("doctor_name", "")), bgcolor=row_bgcolor, padding=10)),
                         ft.DataCell(ft.Container(ft.Text(apt.get("consultation_type", "")), bgcolor=row_bgcolor, padding=10)),
                         ft.DataCell(ft.Container(
-                            ft.Row([
-                                ft.Container(
-                                    content=ft.Text(
-                                        apt.get("status", ""),
-                                        color=ft.Colors.WHITE,
-                                        weight=ft.FontWeight.W_500
-                                    ),
-                                    padding=ft.padding.symmetric(horizontal=10, vertical=5),
-                                    border_radius=15,
-                                    bgcolor=status_color
-                                ),
-                                ft.IconButton(
-                                    icon=ft.Icons.DELETE_OUTLINE,
-                                    icon_color=HR_ERROR,
-                                    tooltip="Delete Appointment",
-                                    on_click=lambda e, apt=apt: create_delete_confirmation_dialog(page, apt["id"], apt["patient_name"], handle_menu_selection),
-                                    visible=is_selected
-                                )
-                            ], alignment=ft.MainAxisAlignment.SPACE_BETWEEN),
+                            content=status_cell_content,
                             bgcolor=row_bgcolor,
                             padding=10
                         )),
@@ -2922,6 +2917,21 @@ def dashboard_ui(page, user):
                     on_select_changed=lambda e, apt=apt: handle_row_click(e, apt),
                     data=apt,
                 )
+
+                # Add delete button to the last cell if selected
+                if is_selected:
+                    row.cells[-1].content.content = ft.Row(
+                        controls=[
+                            status_cell_content,
+                            ft.IconButton(
+                                icon=ft.Icons.DELETE_OUTLINE,
+                                icon_color=HR_ERROR,
+                                tooltip="Delete Appointment",
+                                on_click=lambda e, apt=apt: create_delete_confirmation_dialog(page, apt["id"], apt["patient_name"], handle_menu_selection)
+                            )
+                        ],
+                        alignment=ft.MainAxisAlignment.SPACE_BETWEEN
+                    )
                 table_rows.append(row)
 
             appointments_table = ft.DataTable(
