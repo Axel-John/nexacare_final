@@ -2952,7 +2952,7 @@ def dashboard_ui(page, user):
                     bgcolor=HR_ERROR,
                     color=HR_WHITE,
                     style=ft.ButtonStyle(),
-                    on_click=lambda e: create_delete_confirmation_dialog(page, selected_appointment["id"], selected_appointment["patient_name"]) if selected_appointment else None,
+                    on_click=lambda e: create_delete_confirmation_dialog(page, selected_appointment["id"], selected_appointment["patient_name"], handle_menu_selection) if selected_appointment else None,
                     disabled=not selected_appointment,
                 ),
             ], alignment=ft.MainAxisAlignment.SPACE_BETWEEN)
@@ -3073,7 +3073,7 @@ def dashboard_ui(page, user):
     ], alignment=ft.MainAxisAlignment.END)
 
 # Add this at the top-level (outside any function):
-def create_delete_confirmation_dialog(page, appointment_id, patient_name):
+def create_delete_confirmation_dialog(page, appointment_id, patient_name, state):
     def handle_delete(e):
         from database import delete_appointment
         success, msg = delete_appointment(appointment_id)
@@ -3082,7 +3082,7 @@ def create_delete_confirmation_dialog(page, appointment_id, patient_name):
             page.snack_bar.open = True
             page.schedule_tab_state['selected_appointment'] = None
             # Refresh the Schedule tab
-            handle_menu_selection("Schedule")
+            state.handle_menu_selection("Schedule")
         else:
             page.snack_bar = ft.SnackBar(content=ft.Text(f"Error: {msg}"))
             page.snack_bar.open = True
