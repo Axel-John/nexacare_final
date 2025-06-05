@@ -2888,6 +2888,22 @@ def dashboard_ui(page, user):
                     bgcolor=status_color
                 )
 
+                # Create the last cell content
+                last_cell_content = status_cell_content
+                if is_selected:
+                    last_cell_content = ft.Row(
+                        controls=[
+                            status_cell_content,
+                            ft.IconButton(
+                                icon=ft.Icons.DELETE_OUTLINE,
+                                icon_color=HR_ERROR,
+                                tooltip="Delete Appointment",
+                                on_click=lambda e, apt=apt: create_delete_confirmation_dialog(page, apt["id"], apt["patient_name"], handle_menu_selection)
+                            )
+                        ],
+                        alignment=ft.MainAxisAlignment.SPACE_BETWEEN
+                    )
+
                 row = ft.DataRow(
                     cells=[
                         ft.DataCell(ft.Container(
@@ -2909,7 +2925,7 @@ def dashboard_ui(page, user):
                         ft.DataCell(ft.Container(ft.Text(apt.get("doctor_name", "")), bgcolor=row_bgcolor, padding=10)),
                         ft.DataCell(ft.Container(ft.Text(apt.get("consultation_type", "")), bgcolor=row_bgcolor, padding=10)),
                         ft.DataCell(ft.Container(
-                            content=status_cell_content,
+                            content=last_cell_content,
                             bgcolor=row_bgcolor,
                             padding=10
                         )),
@@ -2917,21 +2933,6 @@ def dashboard_ui(page, user):
                     on_select_changed=lambda e, apt=apt: handle_row_click(e, apt),
                     data=apt,
                 )
-
-                # Add delete button to the last cell if selected
-                if is_selected:
-                    row.cells[-1].content.content = ft.Row(
-                        controls=[
-                            status_cell_content,
-                            ft.IconButton(
-                                icon=ft.Icons.DELETE_OUTLINE,
-                                icon_color=HR_ERROR,
-                                tooltip="Delete Appointment",
-                                on_click=lambda e, apt=apt: create_delete_confirmation_dialog(page, apt["id"], apt["patient_name"], handle_menu_selection)
-                            )
-                        ],
-                        alignment=ft.MainAxisAlignment.SPACE_BETWEEN
-                    )
                 table_rows.append(row)
 
             appointments_table = ft.DataTable(
